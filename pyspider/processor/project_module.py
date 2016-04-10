@@ -29,8 +29,10 @@ class ProjectManager(object):
     RELOAD_PROJECT_INTERVAL = 60 * 60
 
     @staticmethod
-    def build_module(project, env={}):
+    def build_module(project, env=None):
         '''Build project script as module'''
+        if env is None:
+                env = {}
         from pyspider.libs import base_handler
         assert 'name' in project, 'need name of project'
         assert 'script' in project, 'need script of project'
