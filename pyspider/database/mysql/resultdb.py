@@ -26,7 +26,7 @@ class ResultDB(MySQLMixin, SplitTableMixin, BaseResultDB, BaseDB):
         self.conn = mysql.connector.connect(user=user, password=passwd,
                                             host=host, port=port, autocommit=True)
         if database not in [x[0] for x in self._execute('show databases')]:
-            self._execute('CREATE DATABASE %s' % self.escape(database))
+            self._execute('CREATE DATABASE {0!s}'.format(self.escape(database)))
         self.conn.database = database
         self._list_project()
 
@@ -35,12 +35,12 @@ class ResultDB(MySQLMixin, SplitTableMixin, BaseResultDB, BaseDB):
         tablename = self._tablename(project)
         if tablename in [x[0] for x in self._execute('show tables')]:
             return
-        self._execute('''CREATE TABLE %s (
+        self._execute('''CREATE TABLE {0!s} (
             `taskid` varchar(64) PRIMARY KEY,
             `url` varchar(1024),
             `result` MEDIUMBLOB,
             `updatetime` double(16, 4)
-            ) ENGINE=InnoDB CHARSET=utf8''' % self.escape(tablename))
+            ) ENGINE=InnoDB CHARSET=utf8'''.format(self.escape(tablename)))
 
     def _parse(self, data):
         for key, value in list(six.iteritems(data)):
@@ -85,7 +85,7 @@ class ResultDB(MySQLMixin, SplitTableMixin, BaseResultDB, BaseDB):
         if project not in self.projects:
             return 0
         tablename = self._tablename(project)
-        for count, in self._execute("SELECT count(1) FROM %s" % self.escape(tablename)):
+        for count, in self._execute("SELECT count(1) FROM {0!s}".format(self.escape(tablename))):
             return count
 
     def get(self, project, taskid, fields=None):
@@ -94,7 +94,7 @@ class ResultDB(MySQLMixin, SplitTableMixin, BaseResultDB, BaseDB):
         if project not in self.projects:
             return
         tablename = self._tablename(project)
-        where = "`taskid` = %s" % self.placeholder
+        where = "`taskid` = {0!s}".format(self.placeholder)
         for task in self._select2dic(tablename, what=fields,
                                      where=where, where_values=(taskid, )):
             return self._parse(task)

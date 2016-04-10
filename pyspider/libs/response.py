@@ -36,7 +36,7 @@ class Response(object):
         self.time = 0
 
     def __repr__(self):
-        return u'<Response [%d]>' % self.status_code
+        return u'<Response [{0:d}]>'.format(self.status_code)
 
     def __bool__(self):
         """Returns true if `status_code` is 200 and no error"""
@@ -178,11 +178,11 @@ class Response(object):
         elif self.error:
             http_error = HTTPError(self.error)
         elif (self.status_code >= 300) and (self.status_code < 400) and not allow_redirects:
-            http_error = HTTPError('%s Redirection' % (self.status_code))
+            http_error = HTTPError('{0!s} Redirection'.format((self.status_code)))
         elif (self.status_code >= 400) and (self.status_code < 500):
-            http_error = HTTPError('%s Client Error' % (self.status_code))
+            http_error = HTTPError('{0!s} Client Error'.format((self.status_code)))
         elif (self.status_code >= 500) and (self.status_code < 600):
-            http_error = HTTPError('%s Server Error' % (self.status_code))
+            http_error = HTTPError('{0!s} Server Error'.format((self.status_code)))
         else:
             return
 

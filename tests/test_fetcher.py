@@ -62,7 +62,7 @@ class TestFetcher(unittest.TestCase):
         self.outqueue = Queue(10)
         self.fetcher = Fetcher(self.inqueue, self.outqueue)
         self.fetcher.phantomjs_proxy = '127.0.0.1:25555'
-        self.rpc = xmlrpc_client.ServerProxy('http://localhost:%d' % 24444)
+        self.rpc = xmlrpc_client.ServerProxy('http://localhost:{0:d}'.format(24444))
         self.xmlrpc_thread = utils.run_in_thread(self.fetcher.xmlrpc_run, port=24444)
         self.thread = utils.run_in_thread(self.fetcher.run)
         self.proxy_thread = subprocess.Popen(['pyproxy', '--username=binux',

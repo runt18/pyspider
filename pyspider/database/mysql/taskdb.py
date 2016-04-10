@@ -27,7 +27,7 @@ class TaskDB(MySQLMixin, SplitTableMixin, BaseTaskDB, BaseDB):
         self.conn = mysql.connector.connect(user=user, password=passwd,
                                             host=host, port=port, autocommit=True)
         if database not in [x[0] for x in self._execute('show databases')]:
-            self._execute('CREATE DATABASE %s' % self.escape(database))
+            self._execute('CREATE DATABASE {0!s}'.format(self.escape(database)))
         self.conn.database = database
         self._list_project()
 
@@ -36,7 +36,7 @@ class TaskDB(MySQLMixin, SplitTableMixin, BaseTaskDB, BaseDB):
         tablename = self._tablename(project)
         if tablename in [x[0] for x in self._execute('show tables')]:
             return
-        self._execute('''CREATE TABLE IF NOT EXISTS %s (
+        self._execute('''CREATE TABLE IF NOT EXISTS {0!s} (
             `taskid` varchar(64) PRIMARY KEY,
             `project` varchar(64),
             `url` varchar(1024),
@@ -48,7 +48,7 @@ class TaskDB(MySQLMixin, SplitTableMixin, BaseTaskDB, BaseDB):
             `lastcrawltime` double(16, 4),
             `updatetime` double(16, 4),
             INDEX `status_index` (`status`)
-            ) ENGINE=InnoDB CHARSET=utf8''' % self.escape(tablename))
+            ) ENGINE=InnoDB CHARSET=utf8'''.format(self.escape(tablename)))
 
     def _parse(self, data):
         for key, value in list(six.iteritems(data)):
@@ -71,7 +71,7 @@ class TaskDB(MySQLMixin, SplitTableMixin, BaseTaskDB, BaseDB):
     def load_tasks(self, status, project=None, fields=None):
         if project and project not in self.projects:
             return
-        where = "`status` = %s" % self.placeholder
+        where = "`status` = {0!s}".format(self.placeholder)
 
         if project:
             projects = [project, ]
@@ -90,7 +90,7 @@ class TaskDB(MySQLMixin, SplitTableMixin, BaseTaskDB, BaseDB):
             self._list_project()
         if project not in self.projects:
             return None
-        where = "`taskid` = %s" % self.placeholder
+        where = "`taskid` = {0!s}".format(self.placeholder)
         tablename = self._tablename(project)
         for each in self._select2dic(tablename, what=fields, where=where, where_values=(taskid, )):
             return self._parse(each)
@@ -103,8 +103,8 @@ class TaskDB(MySQLMixin, SplitTableMixin, BaseTaskDB, BaseDB):
         if project not in self.projects:
             return result
         tablename = self._tablename(project)
-        for status, count in self._execute("SELECT `status`, count(1) FROM %s GROUP BY `status`" %
-                                           self.escape(tablename)):
+        for status, count in self._execute("SELECT `status`, count(1) FROM {0!s} GROUP BY `status`".format(
+                                           self.escape(tablename))):
             result[status] = count
         return result
 
@@ -132,7 +132,7 @@ class TaskDB(MySQLMixin, SplitTableMixin, BaseTaskDB, BaseDB):
         obj['updatetime'] = time.time()
         return self._update(
             tablename,
-            where="`taskid` = %s" % self.placeholder,
+            where="`taskid` = {0!s}".format(self.placeholder),
             where_values=(taskid, ),
             **self._stringify(obj)
         )

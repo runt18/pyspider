@@ -75,7 +75,7 @@ class TaskDB(BaseTaskDB):
     def get_task(self, project, taskid, fields=None):
         if self._changed:
             self.refresh()
-        ret = self.es.get(index=self.index, doc_type=self.__type__, id="%s:%s" % (project, taskid),
+        ret = self.es.get(index=self.index, doc_type=self.__type__, id="{0!s}:{1!s}".format(project, taskid),
                           _source_include=fields or [], ignore=404)
         return self._parse(ret.get('_source', None))
 
@@ -98,14 +98,14 @@ class TaskDB(BaseTaskDB):
         obj['project'] = project
         obj['updatetime'] = time.time()
         return self.es.index(index=self.index, doc_type=self.__type__,
-                             body=self._stringify(obj), id='%s:%s' % (project, taskid))
+                             body=self._stringify(obj), id='{0!s}:{1!s}'.format(project, taskid))
 
     def update(self, project, taskid, obj={}, **kwargs):
         self._changed = True
         obj = dict(obj)
         obj.update(kwargs)
         obj['updatetime'] = time.time()
-        return self.es.update(index=self.index, doc_type=self.__type__, id='%s:%s' % (project, taskid),
+        return self.es.update(index=self.index, doc_type=self.__type__, id='{0!s}:{1!s}'.format(project, taskid),
                               body={"doc": self._stringify(obj)}, ignore=404)
 
     def drop(self, project):

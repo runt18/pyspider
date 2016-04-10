@@ -416,7 +416,7 @@ class Scheduler(object):
                    "retry:%(retry)d,failed:%(failed)d" % total_cnt)
         for _, project in itertools.chain(top_3_actives, top_2_fails):
             subcounter = self._cnt['5m'][project].to_dict(get_value='sum')
-            log_str += " %s:%d,%d,%d,%d" % (project,
+            log_str += " {0!s}:{1:d},{2:d},{3:d},{4:d}".format(project,
                                             subcounter.get('pending', 0),
                                             subcounter.get('success', 0),
                                             subcounter.get('retry', 0),
@@ -718,7 +718,7 @@ class Scheduler(object):
         if 'schedule' not in task:
             old_task = self.taskdb.get_task(task['project'], task['taskid'], fields=['schedule'])
             if old_task is None:
-                logging.error('unknown status pack: %s' % task)
+                logging.error('unknown status pack: {0!s}'.format(task))
                 return
             task['schedule'] = old_task.get('schedule', {})
 
@@ -747,7 +747,7 @@ class Scheduler(object):
             self._cnt['1h'].event((project, 'failed'), +1)
             self._cnt['1d'].event((project, 'failed'), +1)
             self._cnt['all'].event((project, 'failed'), +1).event((project, 'pending'), -1)
-            logger.info('task failed %(project)s:%(taskid)s %(url)s' % task)
+            logger.info('task failed {project!s}:{taskid!s} {url!s}'.format(**task))
             return task
         else:
             task['schedule']['retried'] = retried + 1
@@ -761,7 +761,7 @@ class Scheduler(object):
             self._cnt['1h'].event((project, 'retry'), +1)
             self._cnt['1d'].event((project, 'retry'), +1)
             # self._cnt['all'].event((project, 'retry'), +1)
-            logger.info('task retry %d/%d %%(project)s:%%(taskid)s %%(url)s' % (
+            logger.info('task retry {0:d}/{1:d} %(project)s:%(taskid)s %(url)s'.format(
                 retried, retries), task)
             return task
 
@@ -820,11 +820,10 @@ class OneScheduler(Scheduler):
                 if len(self.projects) == 1:
                     project = list(self.projects.keys())[0]
                 else:
-                    raise LookupError('You need specify the project: %r'
-                                      % list(self.projects.keys()))
+                    raise LookupError('You need specify the project: {0!r}'.format(list(self.projects.keys())))
             project_data = self.processor.project_manager.get(project)
             if not project_data:
-                raise LookupError('no such project: %s' % project)
+                raise LookupError('no such project: {0!s}'.format(project))
 
             # get task package
             instance = project_data['instance']

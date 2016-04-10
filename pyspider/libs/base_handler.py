@@ -157,7 +157,7 @@ class BaseHandler(object):
         process = task.get('process', {})
         callback = process.get('callback', '__call__')
         if not hasattr(self, callback):
-            raise NotImplementedError("self.%s() not implemented!" % callback)
+            raise NotImplementedError("self.{0!s}() not implemented!".format(callback))
 
         function = getattr(self, callback)
         # do not run_func when 304
@@ -227,7 +227,7 @@ class BaseHandler(object):
                 func = callback
                 kwargs['callback'] = func.__name__
             else:
-                raise NotImplementedError("self.%s() not implemented!" % callback)
+                raise NotImplementedError("self.{0!s}() not implemented!".format(callback))
             if hasattr(func, '_config'):
                 for k, v in iteritems(func._config):
                     if isinstance(v, dict) and isinstance(kwargs.get(k), dict):
@@ -303,9 +303,9 @@ class BaseHandler(object):
             task['taskid'] = self.get_taskid(task)
 
         if kwargs:
-            raise TypeError('crawl() got unexpected keyword argument: %s' % kwargs.keys())
+            raise TypeError('crawl() got unexpected keyword argument: {0!s}'.format(kwargs.keys()))
 
-        cache_key = "%(project)s:%(taskid)s" % task
+        cache_key = "{project!s}:{taskid!s}".format(**task)
         if cache_key not in self._follows_keys:
             self._follows_keys.add(cache_key)
             self._follows.append(task)

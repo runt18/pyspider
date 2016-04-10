@@ -25,7 +25,7 @@ class BaseDB:
 
     @staticmethod
     def escape(string):
-        return '`%s`' % string
+        return '`{0!s}`'.format(string)
 
     @property
     def dbcur(self):
@@ -41,11 +41,11 @@ class BaseDB:
         if isinstance(what, list) or isinstance(what, tuple) or what is None:
             what = ','.join(self.escape(f) for f in what) if what else '*'
 
-        sql_query = "SELECT %s FROM %s" % (what, tablename)
+        sql_query = "SELECT {0!s} FROM {1!s}".format(what, tablename)
         if where:
-            sql_query += " WHERE %s" % where
+            sql_query += " WHERE {0!s}".format(where)
         if limit:
-            sql_query += " LIMIT %d, %d" % (offset, limit)
+            sql_query += " LIMIT {0:d}, {1:d}".format(offset, limit)
         logger.debug("<sql: %s>", sql_query)
 
         for row in self._execute(sql_query, where_values):
@@ -57,13 +57,13 @@ class BaseDB:
         if isinstance(what, list) or isinstance(what, tuple) or what is None:
             what = ','.join(self.escape(f) for f in what) if what else '*'
 
-        sql_query = "SELECT %s FROM %s" % (what, tablename)
+        sql_query = "SELECT {0!s} FROM {1!s}".format(what, tablename)
         if where:
-            sql_query += " WHERE %s" % where
+            sql_query += " WHERE {0!s}".format(where)
         if order:
-            sql_query += ' ORDER BY %s' % order
+            sql_query += ' ORDER BY {0!s}'.format(order)
         if limit:
-            sql_query += " LIMIT %d, %d" % (offset, limit)
+            sql_query += " LIMIT {0:d}, {1:d}".format(offset, limit)
         logger.debug("<sql: %s>", sql_query)
 
         dbcur = self._execute(sql_query, where_values)
@@ -77,9 +77,9 @@ class BaseDB:
         if values:
             _keys = ", ".join(self.escape(k) for k in values)
             _values = ", ".join([self.placeholder, ] * len(values))
-            sql_query = "REPLACE INTO %s (%s) VALUES (%s)" % (tablename, _keys, _values)
+            sql_query = "REPLACE INTO {0!s} ({1!s}) VALUES ({2!s})".format(tablename, _keys, _values)
         else:
-            sql_query = "REPLACE INTO %s DEFAULT VALUES" % tablename
+            sql_query = "REPLACE INTO {0!s} DEFAULT VALUES".format(tablename)
         logger.debug("<sql: %s>", sql_query)
 
         if values:
@@ -93,9 +93,9 @@ class BaseDB:
         if values:
             _keys = ", ".join((self.escape(k) for k in values))
             _values = ", ".join([self.placeholder, ] * len(values))
-            sql_query = "INSERT INTO %s (%s) VALUES (%s)" % (tablename, _keys, _values)
+            sql_query = "INSERT INTO {0!s} ({1!s}) VALUES ({2!s})".format(tablename, _keys, _values)
         else:
-            sql_query = "INSERT INTO %s DEFAULT VALUES" % tablename
+            sql_query = "INSERT INTO {0!s} DEFAULT VALUES".format(tablename)
         logger.debug("<sql: %s>", sql_query)
 
         if values:
@@ -107,18 +107,18 @@ class BaseDB:
     def _update(self, tablename=None, where="1=0", where_values=[], **values):
         tablename = self.escape(tablename or self.__tablename__)
         _key_values = ", ".join([
-            "%s = %s" % (self.escape(k), self.placeholder) for k in values
+            "{0!s} = {1!s}".format(self.escape(k), self.placeholder) for k in values
         ])
-        sql_query = "UPDATE %s SET %s WHERE %s" % (tablename, _key_values, where)
+        sql_query = "UPDATE {0!s} SET {1!s} WHERE {2!s}".format(tablename, _key_values, where)
         logger.debug("<sql: %s>", sql_query)
 
         return self._execute(sql_query, list(itervalues(values)) + list(where_values))
 
     def _delete(self, tablename=None, where="1=0", where_values=[]):
         tablename = self.escape(tablename or self.__tablename__)
-        sql_query = "DELETE FROM %s" % tablename
+        sql_query = "DELETE FROM {0!s}".format(tablename)
         if where:
-            sql_query += " WHERE %s" % where
+            sql_query += " WHERE {0!s}".format(where)
         logger.debug("<sql: %s>", sql_query)
 
         return self._execute(sql_query, where_values)
@@ -133,8 +133,7 @@ if __name__ == "__main__":
             self.conn = sqlite3.connect(":memory:")
             cursor = self.conn.cursor()
             cursor.execute(
-                '''CREATE TABLE `%s` (id INTEGER PRIMARY KEY AUTOINCREMENT, name, age)'''
-                % self.__tablename__
+                '''CREATE TABLE `{0!s}` (id INTEGER PRIMARY KEY AUTOINCREMENT, name, age)'''.format(self.__tablename__)
             )
 
         @property

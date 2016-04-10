@@ -22,10 +22,10 @@ class ProjectDB(MySQLMixin, BaseProjectDB, BaseDB):
         self.conn = mysql.connector.connect(user=user, password=passwd,
                                             host=host, port=port, autocommit=True)
         if database not in [x[0] for x in self._execute('show databases')]:
-            self._execute('CREATE DATABASE %s' % self.escape(database))
+            self._execute('CREATE DATABASE {0!s}'.format(self.escape(database)))
         self.conn.database = database
 
-        self._execute('''CREATE TABLE IF NOT EXISTS %s (
+        self._execute('''CREATE TABLE IF NOT EXISTS {0!s} (
             `name` varchar(64) PRIMARY KEY,
             `group` varchar(64),
             `status` varchar(16),
@@ -34,7 +34,7 @@ class ProjectDB(MySQLMixin, BaseProjectDB, BaseDB):
             `rate` float(11, 4),
             `burst` float(11, 4),
             `updatetime` double(16, 4)
-            ) ENGINE=InnoDB CHARSET=utf8''' % self.escape(self.__tablename__))
+            ) ENGINE=InnoDB CHARSET=utf8'''.format(self.escape(self.__tablename__)))
 
     def insert(self, name, obj={}):
         obj = dict(obj)
@@ -46,22 +46,22 @@ class ProjectDB(MySQLMixin, BaseProjectDB, BaseDB):
         obj = dict(obj)
         obj.update(kwargs)
         obj['updatetime'] = time.time()
-        ret = self._update(where="`name` = %s" % self.placeholder, where_values=(name, ), **obj)
+        ret = self._update(where="`name` = {0!s}".format(self.placeholder), where_values=(name, ), **obj)
         return ret.rowcount
 
     def get_all(self, fields=None):
         return self._select2dic(what=fields)
 
     def get(self, name, fields=None):
-        where = "`name` = %s" % self.placeholder
+        where = "`name` = {0!s}".format(self.placeholder)
         for each in self._select2dic(what=fields, where=where, where_values=(name, )):
             return each
         return None
 
     def drop(self, name):
-        where = "`name` = %s" % self.placeholder
+        where = "`name` = {0!s}".format(self.placeholder)
         return self._delete(where=where, where_values=(name, ))
 
     def check_update(self, timestamp, fields=None):
-        where = "`updatetime` >= %f" % timestamp
+        where = "`updatetime` >= {0:f}".format(timestamp)
         return self._select2dic(what=fields, where=where)

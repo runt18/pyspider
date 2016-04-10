@@ -279,8 +279,8 @@ class ResultDBCase(object):
 
     def test_30_select(self):
         for i in range(5):
-            self.resultdb.save('test_project', 'test_taskid-%d' % i,
-                               'test_url', 'result-%d' % i)
+            self.resultdb.save('test_project', 'test_taskid-{0:d}'.format(i),
+                               'test_url', 'result-{0:d}'.format(i))
         ret = list(self.resultdb.select('test_project'))
         self.assertEqual(len(ret), 6)
 
@@ -610,8 +610,8 @@ class TestESResultDB(ResultDBCase, unittest.TestCase):
 
     def test_30_select(self):
         for i in range(5):
-            self.resultdb.save('test_project', 'test_taskid-%d' % i,
-                               'test_url', 'result-%d' % i)
+            self.resultdb.save('test_project', 'test_taskid-{0:d}'.format(i),
+                               'test_url', 'result-{0:d}'.format(i))
         self.resultdb.refresh()
 
         ret = list(self.resultdb.select('test_project'))

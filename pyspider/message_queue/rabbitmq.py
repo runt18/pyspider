@@ -225,7 +225,7 @@ class AmqpQueue(PikaQueue):
         """Reconnect to rabbitmq server"""
         parsed = urlparse.urlparse(self.amqp_url)
         port = parsed.port or 5672
-        self.connection = amqp.Connection(host="%s:%s" % (parsed.hostname, port),
+        self.connection = amqp.Connection(host="{0!s}:{1!s}".format(parsed.hostname, port),
                                           userid=parsed.username or 'guest',
                                           password=parsed.password or 'guest',
                                           virtual_host=unquote(

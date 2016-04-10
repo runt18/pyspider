@@ -51,7 +51,7 @@ def _connect_database(url):  # NOQA
 
     scheme = parsed.scheme.split('+')
     if len(scheme) == 1:
-        raise Exception('wrong scheme format: %s' % parsed.scheme)
+        raise Exception('wrong scheme format: {0!s}'.format(parsed.scheme))
     else:
         engine, dbtype = scheme[0], scheme[-1]
         other_scheme = "+".join(scheme[1:-1])
@@ -92,7 +92,7 @@ def _connect_database(url):  # NOQA
         elif not parsed.path:
             path = ':memory:'
         else:
-            raise Exception('error path: %s' % parsed.path)
+            raise Exception('error path: {0!s}'.format(parsed.path))
 
         if dbtype == 'taskdb':
             from .sqlite.taskdb import TaskDB
@@ -124,7 +124,7 @@ def _connect_database(url):  # NOQA
             raise LookupError
     elif engine == 'sqlalchemy':
         if not other_scheme:
-            raise Exception('wrong scheme format: %s' % parsed.scheme)
+            raise Exception('wrong scheme format: {0!s}'.format(parsed.scheme))
         url = url.replace(parsed.scheme, other_scheme)
 
         if dbtype == 'taskdb':
@@ -169,4 +169,4 @@ def _connect_database(url):  # NOQA
             from .elasticsearch.taskdb import TaskDB
             return TaskDB([parsed.netloc], index=index)
     else:
-        raise Exception('unknown engine: %s' % engine)
+        raise Exception('unknown engine: {0!s}'.format(engine))

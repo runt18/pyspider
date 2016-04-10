@@ -29,7 +29,7 @@ class ResultWorker(object):
         if not result:
             return
         if 'taskid' in task and 'project' in task and 'url' in task:
-            logger.info('result %s:%s %s -> %.30r' % (
+            logger.info('result {0!s}:{1!s} {2!s} -> {3:.30!r}'.format(
                 task['project'], task['taskid'], task['url'], result))
             return self.resultdb.save(
                 project=task['project'],
@@ -38,7 +38,7 @@ class ResultWorker(object):
                 result=result
             )
         else:
-            logger.warning('result UNKNOW -> %.30r' % result)
+            logger.warning('result UNKNOW -> {0:.30!r}'.format(result))
             return
 
     def quit(self):
@@ -73,7 +73,7 @@ class OneResultWorker(ResultWorker):
         if not result:
             return
         if 'taskid' in task and 'project' in task and 'url' in task:
-            logger.info('result %s:%s %s -> %.30r' % (
+            logger.info('result {0!s}:{1!s} {2!s} -> {3:.30!r}'.format(
                 task['project'], task['taskid'], task['url'], result))
             print(json.dumps({
                 'taskid': task['taskid'],
@@ -83,5 +83,5 @@ class OneResultWorker(ResultWorker):
                 'updatetime': time.time()
             }))
         else:
-            logger.warning('result UNKNOW -> %.30r' % result)
+            logger.warning('result UNKNOW -> {0:.30!r}'.format(result))
             return

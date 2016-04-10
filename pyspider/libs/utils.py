@@ -132,7 +132,7 @@ def format_date(date, gmt_offset=0, relative=True, shorter=False, full_format=Fa
         format = "%(month_name)s %(day)s, %(year)s" if shorter else \
             "%(month_name)s %(day)s, %(year)s at %(time)s"
 
-    str_time = "%d:%02d" % (local_date.hour, local_date.minute)
+    str_time = "{0:d}:{1:02d}".format(local_date.hour, local_date.minute)
 
     return format % {
         "month_name": local_date.strftime('%b'),

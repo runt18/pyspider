@@ -53,7 +53,7 @@ class TestFetcherProcessor(unittest.TestCase):
             url = dataurl.encode(utils.text(kwargs.get('callback')))
 
         project_data = self.processor.project_manager.get(self.project_name)
-        assert project_data, "can't find project: %s" % self.project_name
+        assert project_data, "can't find project: {0!s}".format(self.project_name)
         instance = project_data['instance']
         instance._reset()
         task = instance.crawl(url, **kwargs)
@@ -460,12 +460,12 @@ class TestFetcherProcessor(unittest.TestCase):
     def test_zzz_curl_bad_option(self):
         with self.assertRaisesRegexp(TypeError, 'Unknow curl option'):
             status, newtasks, result = self.crawl(
-                '''curl '%s/put' -X PUT -H 'Origin: chrome-extension://hgmloofddffdnphfgcellkdfbfbjeloo' -v''' % self.httpbin,
+                '''curl '{0!s}/put' -X PUT -H 'Origin: chrome-extension://hgmloofddffdnphfgcellkdfbfbjeloo' -v'''.format(self.httpbin),
                 callback=self.json)
 
         with self.assertRaisesRegexp(TypeError, 'Unknow curl option'):
             status, newtasks, result = self.crawl(
-                '''curl '%s/put' -X PUT -v -H 'Origin: chrome-extension://hgmloofddffdnphfgcellkdfbfbjeloo' ''' % self.httpbin,
+                '''curl '{0!s}/put' -X PUT -v -H 'Origin: chrome-extension://hgmloofddffdnphfgcellkdfbfbjeloo' '''.format(self.httpbin),
                 callback=self.json)
 
 
