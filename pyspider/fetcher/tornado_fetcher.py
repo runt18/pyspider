@@ -61,7 +61,7 @@ fetcher_output = {
 
 
 class Fetcher(object):
-    user_agent = "pyspider/%s (+http://pyspider.org/)" % pyspider.__version__
+    user_agent = "pyspider/{0!s} (+http://pyspider.org/)".format(pyspider.__version__)
     default_options = {
         'method': 'GET',
         'headers': {
@@ -377,7 +377,7 @@ class Fetcher(object):
                     and task_fetch.get('allow_redirects', True)):
                 if max_redirects <= 0:
                     error = tornado.httpclient.HTTPError(
-                        599, 'Maximum (%d) redirects followed' % task_fetch.get('max_redirects', 5),
+                        599, 'Maximum ({0:d}) redirects followed'.format(task_fetch.get('max_redirects', 5)),
                         response)
                     raise gen.Return(handle_error(error))
                 if response.code in (302, 303):
@@ -469,7 +469,7 @@ class Fetcher(object):
         fetch['headers'] = dict(fetch['headers'])
         try:
             request = tornado.httpclient.HTTPRequest(
-                url="%s" % self.phantomjs_proxy, method="POST",
+                url="{0!s}".format(self.phantomjs_proxy), method="POST",
                 body=json.dumps(fetch), **request_conf)
         except Exception as e:
             raise gen.Return(handle_error(e))

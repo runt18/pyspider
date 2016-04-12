@@ -48,7 +48,7 @@ class ResultDB(BaseResultDB):
             'updatetime': time.time(),
         }
         return self.es.index(index=self.index, doc_type=self.__type__,
-                             body=obj, id='%s:%s' % (project, taskid))
+                             body=obj, id='{0!s}:{1!s}'.format(project, taskid))
 
     def select(self, project, fields=None, offset=0, limit=0):
         if not limit:
@@ -71,7 +71,7 @@ class ResultDB(BaseResultDB):
                              ).get('count', 0)
 
     def get(self, project, taskid, fields=None):
-        ret = self.es.get(index=self.index, doc_type=self.__type__, id="%s:%s" % (project, taskid),
+        ret = self.es.get(index=self.index, doc_type=self.__type__, id="{0!s}:{1!s}".format(project, taskid),
                           _source_include=fields or [], ignore=404)
         return ret.get('_source', None)
 

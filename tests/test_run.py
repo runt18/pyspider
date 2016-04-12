@@ -279,18 +279,18 @@ class TestRun(unittest.TestCase):
             text = wait_text()
             self.assertIn('task done data_sample_handler:on_start', text)
 
-            os.write(fd, utils.utf8('crawl("%s/pyspider/test.html")\n' % self.httpbin))
+            os.write(fd, utils.utf8('crawl("{0!s}/pyspider/test.html")\n'.format(self.httpbin)))
             text = wait_text()
             self.assertIn('/robots.txt', text)
 
-            os.write(fd, utils.utf8('crawl("%s/links/10/0")\n' % self.httpbin))
+            os.write(fd, utils.utf8('crawl("{0!s}/links/10/0")\n'.format(self.httpbin)))
             text = wait_text()
             if '"title": "Links"' not in text:
-                os.write(fd, utils.utf8('crawl("%s/links/10/1")\n' % self.httpbin))
+                os.write(fd, utils.utf8('crawl("{0!s}/links/10/1")\n'.format(self.httpbin)))
                 text = wait_text()
                 self.assertIn('"title": "Links"', text)
 
-            os.write(fd, utils.utf8('crawl("%s/404")\n' % self.httpbin))
+            os.write(fd, utils.utf8('crawl("{0!s}/404")\n'.format(self.httpbin)))
             text = wait_text()
             self.assertIn('task retry', text)
 

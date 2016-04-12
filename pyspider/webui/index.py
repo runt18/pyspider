@@ -30,7 +30,7 @@ def get_queues():
         try:
             return queue.qsize()
         except Exception as e:
-            return "%r" % e
+            return "{0!r}".format(e)
 
     result = {}
     queues = app.config.get('queues', {})
@@ -54,7 +54,7 @@ def project_update():
         return app.login_response
 
     if name not in ('group', 'status', 'rate'):
-        return 'unknown field: %s' % name, 400
+        return 'unknown field: {0!s}'.format(name), 400
     if name == 'rate':
         value = value.split('/')
         if len(value) != 2:

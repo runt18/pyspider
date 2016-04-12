@@ -102,12 +102,12 @@ def cli(ctx, **kwargs):
             continue
         if os.environ.get('MYSQL_NAME'):
             kwargs[db] = utils.Get(lambda db=db: connect_database(
-                'sqlalchemy+mysql+%s://%s:%s/%s' % (
+                'sqlalchemy+mysql+{0!s}://{1!s}:{2!s}/{3!s}'.format(
                     db, os.environ['MYSQL_PORT_3306_TCP_ADDR'],
                     os.environ['MYSQL_PORT_3306_TCP_PORT'], db)))
         elif os.environ.get('MONGODB_NAME'):
             kwargs[db] = utils.Get(lambda db=db: connect_database(
-                'mongodb+%s://%s:%s/%s' % (
+                'mongodb+{0!s}://{1!s}:{2!s}/{3!s}'.format(
                     db, os.environ['MONGODB_PORT_27017_TCP_ADDR'],
                     os.environ['MONGODB_PORT_27017_TCP_PORT'], db)))
         elif ctx.invoked_subcommand == 'bench':
@@ -116,16 +116,16 @@ def cli(ctx, **kwargs):
                 shutil.rmtree(kwargs['data_path'], ignore_errors=True)
                 os.mkdir(kwargs['data_path'])
             if db in ('taskdb', 'resultdb'):
-                kwargs[db] = utils.Get(lambda db=db: connect_database('sqlite+%s://' % (db)))
+                kwargs[db] = utils.Get(lambda db=db: connect_database('sqlite+{0!s}://'.format((db))))
             else:
-                kwargs[db] = utils.Get(lambda db=db: connect_database('sqlite+%s:///%s/%s.db' % (
+                kwargs[db] = utils.Get(lambda db=db: connect_database('sqlite+{0!s}:///{1!s}/{2!s}.db'.format(
                     db, kwargs['data_path'], db[:-2])))
         else:
             if not os.path.exists(kwargs['data_path']):
                 os.mkdir(kwargs['data_path'])
-            kwargs[db] = utils.Get(lambda db=db: connect_database('sqlite+%s:///%s/%s.db' % (
+            kwargs[db] = utils.Get(lambda db=db: connect_database('sqlite+{0!s}:///{1!s}/{2!s}.db'.format(
                 db, kwargs['data_path'], db[:-2])))
-            kwargs['is_%s_default' % db] = True
+            kwargs['is_{0!s}_default'.format(db)] = True
 
     # create folder for counter.dump
     if not os.path.exists(kwargs['data_path']):
@@ -140,7 +140,7 @@ def cli(ctx, **kwargs):
         kwargs['message_queue'] = ("amqp://guest:guest@%(RABBITMQ_PORT_5672_TCP_ADDR)s"
                                    ":%(RABBITMQ_PORT_5672_TCP_PORT)s/%%2F" % os.environ)
     elif kwargs.get('beanstalk'):
-        kwargs['message_queue'] = "beanstalk://%s/" % kwargs['beanstalk']
+        kwargs['message_queue'] = "beanstalk://{0!s}/".format(kwargs['beanstalk'])
 
     for name in ('newtask_queue', 'status_queue', 'scheduler2fetcher',
                  'fetcher2processor', 'processor2result'):
@@ -362,8 +362,8 @@ def webui(ctx, host, port, cdn, scheduler_rpc, fetcher_rpc, max_rate, max_burst,
     if isinstance(scheduler_rpc, six.string_types):
         scheduler_rpc = connect_rpc(ctx, None, scheduler_rpc)
     if scheduler_rpc is None and os.environ.get('SCHEDULER_NAME'):
-        app.config['scheduler_rpc'] = connect_rpc(ctx, None, 'http://%s/' % (
-            os.environ['SCHEDULER_PORT_23333_TCP'][len('tcp://'):]))
+        app.config['scheduler_rpc'] = connect_rpc(ctx, None, 'http://{0!s}/'.format((
+            os.environ['SCHEDULER_PORT_23333_TCP'][len('tcp://'):])))
     elif scheduler_rpc is None:
         app.config['scheduler_rpc'] = connect_rpc(ctx, None, 'http://127.0.0.1:23333/')
     else:
@@ -413,7 +413,7 @@ def phantomjs(ctx, phantomjs_path, port, auto_restart, args):
         logging.info('phantomjs existed.')
 
     if not g.get('phantomjs_proxy'):
-        g['phantomjs_proxy'] = '127.0.0.1:%s' % port
+        g['phantomjs_proxy'] = '127.0.0.1:{0!s}'.format(port)
 
     phantomjs = utils.ObjectDict(port=port, quit=quit)
     g.instances.append(phantomjs)
@@ -460,7 +460,7 @@ def all(ctx, fetcher_num, processor_num, result_worker_num, run_in):
             threads.append(run_in(ctx.invoke, phantomjs, **phantomjs_config))
             time.sleep(2)
             if threads[-1].is_alive() and not g.get('phantomjs_proxy'):
-                g['phantomjs_proxy'] = '127.0.0.1:%s' % phantomjs_config.get('port', 25555)
+                g['phantomjs_proxy'] = '127.0.0.1:{0!s}'.format(phantomjs_config.get('port', 25555))
 
         # result worker
         result_worker_config = g.config.get('result_worker', {})
@@ -485,8 +485,7 @@ def all(ctx, fetcher_num, processor_num, result_worker_num, run_in):
 
         # running webui in main thread to make it exitable
         webui_config = g.config.get('webui', {})
-        webui_config.setdefault('scheduler_rpc', 'http://127.0.0.1:%s/'
-                                % g.config.get('scheduler', {}).get('xmlrpc_port', 23333))
+        webui_config.setdefault('scheduler_rpc', 'http://127.0.0.1:{0!s}/'.format(g.config.get('scheduler', {}).get('xmlrpc_port', 23333)))
         ctx.invoke(webui, **webui_config)
     finally:
         # exit components run in threading
@@ -608,12 +607,11 @@ def bench(ctx, fetcher_num, processor_num, result_worker_num, run_in, total, sho
                               scheduler_cls='pyspider.libs.bench.BenchScheduler',
                               **scheduler_config))
         scheduler_rpc = connect_rpc(ctx, None,
-                                    'http://%(xmlrpc_host)s:%(xmlrpc_port)s/' % scheduler_config)
+                                    'http://{xmlrpc_host!s}:{xmlrpc_port!s}/'.format(**scheduler_config))
 
         # webui
         webui_config = g.config.get('webui', {})
-        webui_config.setdefault('scheduler_rpc', 'http://127.0.0.1:%s/'
-                                % g.config.get('scheduler', {}).get('xmlrpc_port', 23333))
+        webui_config.setdefault('scheduler_rpc', 'http://127.0.0.1:{0!s}/'.format(g.config.get('scheduler', {}).get('xmlrpc_port', 23333)))
         threads.append(run_in(ctx.invoke, webui, **webui_config))
 
         # wait bench test finished
@@ -664,7 +662,7 @@ def one(ctx, interactive, enable_phantomjs, scripts):
         phantomjs_config = g.config.get('phantomjs', {})
         phantomjs_obj = ctx.invoke(phantomjs, **phantomjs_config)
         if phantomjs_obj:
-            g.setdefault('phantomjs_proxy', '127.0.0.1:%s' % phantomjs_obj.port)
+            g.setdefault('phantomjs_proxy', '127.0.0.1:{0!s}'.format(phantomjs_obj.port))
     else:
         phantomjs_obj = None
 
@@ -717,8 +715,8 @@ def send_message(ctx, scheduler_rpc, project, message):
     if isinstance(scheduler_rpc, six.string_types):
         scheduler_rpc = connect_rpc(ctx, None, scheduler_rpc)
     if scheduler_rpc is None and os.environ.get('SCHEDULER_NAME'):
-        scheduler_rpc = connect_rpc(ctx, None, 'http://%s/' % (
-            os.environ['SCHEDULER_PORT_23333_TCP'][len('tcp://'):]))
+        scheduler_rpc = connect_rpc(ctx, None, 'http://{0!s}/'.format((
+            os.environ['SCHEDULER_PORT_23333_TCP'][len('tcp://'):])))
     if scheduler_rpc is None:
         scheduler_rpc = connect_rpc(ctx, None, 'http://127.0.0.1:23333/')
 

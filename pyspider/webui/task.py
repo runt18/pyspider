@@ -46,7 +46,7 @@ def tasks():
     tasks = {}
     result = []
     for updatetime, task in sorted(updatetime_tasks , key=lambda x: x[0]):
-        key = '%(project)s:%(taskid)s' % task
+        key = '{project!s}:{taskid!s}'.format(**task)
         task['updatetime'] = updatetime
         if key in tasks and tasks[key].get('status', None) != taskdb.ACTIVE:
             result.append(tasks[key])

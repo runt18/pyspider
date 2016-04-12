@@ -13,7 +13,7 @@ class SplitTableMixin(object):
 
     def _collection_name(self, project):
         if self.collection_prefix:
-            return "%s.%s" % (self.collection_prefix, project)
+            return "{0!s}.{1!s}".format(self.collection_prefix, project)
         else:
             return project
 
@@ -32,7 +32,7 @@ class SplitTableMixin(object):
         self._last_update_projects = time.time()
         self.projects = set()
         if self.collection_prefix:
-            prefix = "%s." % self.collection_prefix
+            prefix = "{0!s}.".format(self.collection_prefix)
         else:
             prefix = ''
         for each in self.database.collection_names():

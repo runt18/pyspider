@@ -61,7 +61,7 @@ def bench_test_taskdb(taskdb):
         logger.info("taskdb insert %d", n)
         start_time = time.time()
         for i in range(n):
-            task['url'] = 'http://bench.pyspider.org/?l=%d' % (i + start)
+            task['url'] = 'http://bench.pyspider.org/?l={0:d}'.format((i + start))
             task['taskid'] = md5string(task['url'])
             task['track'] = {}
             taskdb.insert(task['project'], task['taskid'], task)
@@ -71,10 +71,10 @@ def bench_test_taskdb(taskdb):
                     cost_time, n * 1.0 / cost_time, cost_time / n * 1000)
 
     def test_update(n, start=0):
-        logger.info("taskdb update %d" % n)
+        logger.info("taskdb update {0:d}".format(n))
         start_time = time.time()
         for i in range(n):
-            task['url'] = 'http://bench.pyspider.org/?l=%d' % (i + start)
+            task['url'] = 'http://bench.pyspider.org/?l={0:d}'.format((i + start))
             task['taskid'] = md5string(task['url'])
             task['track'] = track
             taskdb.update(task['project'], task['taskid'], task)
@@ -95,14 +95,14 @@ def bench_test_taskdb(taskdb):
     ]
 
     def test_get(n, start=0, random=True, fields=request_task_fields):
-        logger.info("taskdb get %d %s" % (n, "randomly" if random else ""))
+        logger.info("taskdb get {0:d} {1!s}".format(n, "randomly" if random else ""))
         range_n = list(range(n))
         if random:
             from random import shuffle
             shuffle(range_n)
         start_time = time.time()
         for i in range_n:
-            task['url'] = 'http://bench.pyspider.org/?l=%d' % (i + start)
+            task['url'] = 'http://bench.pyspider.org/?l={0:d}'.format((i + start))
             task['taskid'] = md5string(task['url'])
             task['track'] = track
             taskdb.get_task(task['project'], task['taskid'], fields=fields)
@@ -144,7 +144,7 @@ def bench_test_message_queue(queue):
         logger.info("message queue put %d", n)
         start_time = time.time()
         for i in range(n):
-            task['url'] = 'http://bench.pyspider.org/?l=%d' % i
+            task['url'] = 'http://bench.pyspider.org/?l={0:d}'.format(i)
             task['taskid'] = md5string(task['url'])
             queue.put(task, block=True, timeout=1)
         end_time = time.time()
@@ -194,7 +194,7 @@ class BenchMixin(object):
             output = ''
             if prefix:
                 output += " " * prefix
-            output += ("%s %s pages (at %d pages/min)" % (
+            output += ("{0!s} {1!s} pages (at {2:d} pages/min)".format(
                 name, self.done_cnt, rps * 60.0)).rjust(rjust)
             logger.info(output)
             self.last_cnt = self.done_cnt

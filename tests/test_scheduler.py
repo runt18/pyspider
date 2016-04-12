@@ -129,7 +129,7 @@ class TestScheduler(unittest.TestCase):
         self.newtask_queue = Queue(10)
         self.status_queue = Queue(10)
         self.scheduler2fetcher = Queue(10)
-        self.rpc = xmlrpc_client.ServerProxy('http://localhost:%d' % self.scheduler_xmlrpc_port)
+        self.rpc = xmlrpc_client.ServerProxy('http://localhost:{0:d}'.format(self.scheduler_xmlrpc_port))
 
         def run_scheduler():
             scheduler = Scheduler(taskdb=get_taskdb(), projectdb=get_projectdb(),
@@ -632,7 +632,7 @@ class TestScheduler(unittest.TestCase):
         pre_size = self.rpc.size()
         for i in range(20):
             self.newtask_queue.put({
-                'taskid': 'taskid%d' % i,
+                'taskid': 'taskid{0:d}'.format(i),
                 'project': 'test_inqueue_project',
                 'url': 'url',
                 'schedule': {

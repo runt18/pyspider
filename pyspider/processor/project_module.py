@@ -199,7 +199,7 @@ class ProjectLoader(object):
             self.mod = mod = imp.new_module(fullname)
         else:
             mod = self.mod
-        mod.__file__ = '<%s>' % self.name
+        mod.__file__ = '<{0!s}>'.format(self.name)
         mod.__loader__ = self
         mod.__project__ = self.project
         mod.__package__ = ''
@@ -212,7 +212,7 @@ class ProjectLoader(object):
         return False
 
     def get_code(self, fullname):
-        return compile(self.get_source(fullname), '<%s>' % self.name, 'exec')
+        return compile(self.get_source(fullname), '<{0!s}>'.format(self.name), 'exec')
 
     def get_source(self, fullname):
         script = self.project['script']

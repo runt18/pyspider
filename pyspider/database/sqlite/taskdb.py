@@ -27,16 +27,15 @@ class TaskDB(SQLiteMixin, SplitTableMixin, BaseTaskDB, BaseDB):
     def _create_project(self, project):
         assert re.match(r'^\w+$', project) is not None
         tablename = self._tablename(project)
-        self._execute('''CREATE TABLE IF NOT EXISTS `%s` (
+        self._execute('''CREATE TABLE IF NOT EXISTS `{0!s}` (
                 taskid PRIMARY KEY,
                 project,
                 url, status,
                 schedule, fetch, process, track,
                 lastcrawltime, updatetime
-                )''' % tablename)
+                )'''.format(tablename))
         self._execute(
-            '''CREATE INDEX `status_%s_index` ON %s (status)'''
-            % (tablename, self.escape(tablename))
+            '''CREATE INDEX `status_{0!s}_index` ON {1!s} (status)'''.format(tablename, self.escape(tablename))
         )
 
     def _parse(self, data):
@@ -57,7 +56,7 @@ class TaskDB(SQLiteMixin, SplitTableMixin, BaseTaskDB, BaseDB):
     def load_tasks(self, status, project=None, fields=None):
         if project and project not in self.projects:
             return
-        where = "status = %d" % status
+        where = "status = {0:d}".format(status)
 
         if project:
             projects = [project, ]
@@ -74,7 +73,7 @@ class TaskDB(SQLiteMixin, SplitTableMixin, BaseTaskDB, BaseDB):
             self._list_project()
         if project not in self.projects:
             return None
-        where = "`taskid` = %s" % self.placeholder
+        where = "`taskid` = {0!s}".format(self.placeholder)
         if project not in self.projects:
             return None
         tablename = self._tablename(project)
@@ -92,8 +91,8 @@ class TaskDB(SQLiteMixin, SplitTableMixin, BaseTaskDB, BaseDB):
         if project not in self.projects:
             return result
         tablename = self._tablename(project)
-        for status, count in self._execute("SELECT `status`, count(1) FROM %s GROUP BY `status`" %
-                                           self.escape(tablename)):
+        for status, count in self._execute("SELECT `status`, count(1) FROM {0!s} GROUP BY `status`".format(
+                                           self.escape(tablename))):
             result[status] = count
         return result
 
@@ -116,6 +115,6 @@ class TaskDB(SQLiteMixin, SplitTableMixin, BaseTaskDB, BaseDB):
         obj.update(kwargs)
         obj['updatetime'] = time.time()
         return self._update(
-            tablename, where="`taskid` = %s" % self.placeholder, where_values=(taskid, ),
+            tablename, where="`taskid` = {0!s}".format(self.placeholder), where_values=(taskid, ),
             **self._stringify(obj)
         )

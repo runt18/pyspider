@@ -20,7 +20,7 @@ class SplitTableMixin(object):
 
     def _tablename(self, project):
         if self.__tablename__:
-            return '%s_%s' % (self.__tablename__, project)
+            return '{0!s}_{1!s}'.format(self.__tablename__, project)
         else:
             return project
 
@@ -39,7 +39,7 @@ class SplitTableMixin(object):
         self._last_update_projects = time.time()
         self.projects = set()
         if self.__tablename__:
-            prefix = '%s_' % self.__tablename__
+            prefix = '{0!s}_'.format(self.__tablename__)
         else:
             prefix = ''
 

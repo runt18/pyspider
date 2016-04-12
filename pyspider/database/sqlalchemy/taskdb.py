@@ -46,7 +46,7 @@ class TaskDB(SplitTableMixin, BaseTaskDB):
                 engine = create_engine(self.url)
                 conn = engine.connect()
                 conn.execute("commit")
-                conn.execute("CREATE DATABASE %s" % database)
+                conn.execute("CREATE DATABASE {0!s}".format(database))
             except sqlalchemy.exc.SQLAlchemyError:
                 pass
             self.url.database = database
@@ -59,7 +59,7 @@ class TaskDB(SplitTableMixin, BaseTaskDB):
         if project in self.projects:
             return
         self.table.name = self._tablename(project)
-        Index('status_%s_index' % self.table.name, self.table.c.status)
+        Index('status_{0!s}_index'.format(self.table.name), self.table.c.status)
         self.table.create(self.engine, checkfirst=True)
         self.table.indexes.clear()
 

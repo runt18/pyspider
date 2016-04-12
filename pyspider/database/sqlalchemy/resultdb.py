@@ -38,7 +38,7 @@ class ResultDB(SplitTableMixin, BaseResultDB):
             self.url.database = None
             try:
                 engine = create_engine(self.url, convert_unicode=True)
-                engine.execute("CREATE DATABASE IF NOT EXISTS %s" % database)
+                engine.execute("CREATE DATABASE IF NOT EXISTS {0!s}".format(database))
             except sqlalchemy.exc.SQLAlchemyError:
                 pass
             self.url.database = database

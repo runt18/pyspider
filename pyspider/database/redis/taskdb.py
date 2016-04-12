@@ -30,10 +30,10 @@ class TaskDB(BaseTaskDB):
             self.scan_available = False
 
     def _gen_key(self, project, taskid):
-        return "%s%s_%s" % (self.__prefix__, project, taskid)
+        return "{0!s}{1!s}_{2!s}".format(self.__prefix__, project, taskid)
 
     def _gen_status_key(self, project, status):
-        return '%s%s_status_%d' % (self.__prefix__, project, status)
+        return '{0!s}{1!s}_status_{2:d}'.format(self.__prefix__, project, status)
 
     def _parse(self, data):
         if six.PY3:
@@ -169,7 +169,7 @@ class TaskDB(BaseTaskDB):
         else:
             scan_method = self.redis.keys
 
-        for each in itertools.tee(scan_method("%s%s_*" % (self.__prefix__, project)), 100):
+        for each in itertools.tee(scan_method("{0!s}{1!s}_*".format(self.__prefix__, project)), 100):
             each = list(each)
             if each:
                 self.redis.delete(*each)

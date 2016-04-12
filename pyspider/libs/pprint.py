@@ -168,9 +168,9 @@ class PrettyPrinter:
                     for key, ent in items[1:]:
                         rep = self._repr(key, context, level)
                         if sepLines:
-                            write(',\n%s%s: ' % (' ' * indent, rep))
+                            write(',\n{0!s}{1!s}: '.format(' ' * indent, rep))
                         else:
-                            write(', %s: ' % rep)
+                            write(', {0!s}: '.format(rep))
                         self._format(ent, stream, indent + _len(rep) + 2,
                                      allowance + 1, context, level)
                 indent = indent - self._indent_per_level
@@ -267,7 +267,7 @@ def _safe_repr(object, context, maxlevels, level):
             string = string.replace("'", "\\'")
         try:
             string.decode('utf8').encode('gbk', 'replace')
-            return ("%s%s%s" % (closure, string, closure)), True, False
+            return ("{0!s}{1!s}{2!s}".format(closure, string, closure)), True, False
         except:
             pass
         qget = quotes.get
@@ -278,7 +278,7 @@ def _safe_repr(object, context, maxlevels, level):
                 write(char)
             else:
                 write(qget(char, repr(char)[1:-1]))
-        return ("%s%s%s" % (closure, sio.getvalue(), closure)), True, False
+        return ("{0!s}{1!s}{2!s}".format(closure, sio.getvalue(), closure)), True, False
 
     if typ is six.text_type:
         string = object.encode("utf8", 'replace')
@@ -291,7 +291,7 @@ def _safe_repr(object, context, maxlevels, level):
             closure = "'"
             quotes = {"'": "\\'"}
             string = string.replace("'", "\\'")
-        return ("u%s%s%s" % (closure, string, closure)), True, False
+        return ("u{0!s}{1!s}{2!s}".format(closure, string, closure)), True, False
 
     r = getattr(typ, "__repr__", None)
     if issubclass(typ, dict) and r is dict.__repr__:
@@ -312,12 +312,12 @@ def _safe_repr(object, context, maxlevels, level):
         for k, v in _sorted(object.items()):
             krepr, kreadable, krecur = saferepr(k, context, maxlevels, level)
             vrepr, vreadable, vrecur = saferepr(v, context, maxlevels, level)
-            append("%s: %s" % (krepr, vrepr))
+            append("{0!s}: {1!s}".format(krepr, vrepr))
             readable = readable and kreadable and vreadable
             if krecur or vrecur:
                 recursive = True
         del context[objid]
-        return "{%s}" % _commajoin(components), readable, recursive
+        return "{{{0!s}}}".format(_commajoin(components)), readable, recursive
 
     if (issubclass(typ, list) and r is list.__repr__) or \
             (issubclass(typ, tuple) and r is tuple.__repr__):
@@ -357,8 +357,7 @@ def _safe_repr(object, context, maxlevels, level):
 
 
 def _recursion(object):
-    return ("<Recursion on %s with id=%s>"
-            % (_type(object).__name__, _id(object)))
+    return ("<Recursion on {0!s} with id={1!s}>".format(_type(object).__name__, _id(object)))
 
 
 def _perfcheck(object=None):

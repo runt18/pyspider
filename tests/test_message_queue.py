@@ -41,9 +41,9 @@ class TestMessageQueue(object):
         self.assertEqual(self.q1.qsize(), 0)
         self.assertEqual(self.q2.qsize(), 0)
         for i in range(2):
-            self.q1.put_nowait('TEST_DATA%d' % i)
+            self.q1.put_nowait('TEST_DATA{0:d}'.format(i))
         for i in range(3):
-            self.q2.put('TEST_DATA%d' % i)
+            self.q2.put('TEST_DATA{0:d}'.format(i))
         with self.assertRaises(Queue.Full):
             self.q1.put('TEST_DATA6', timeout=0.01)
         with self.assertRaises(Queue.Full):
@@ -52,7 +52,7 @@ class TestMessageQueue(object):
     def test_40_multiple_threading_error(self):
         def put(q):
             for i in range(100):
-                q.put("DATA_%d" % i)
+                q.put("DATA_{0:d}".format(i))
 
         def get(q):
             for i in range(100):

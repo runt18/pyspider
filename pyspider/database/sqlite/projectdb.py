@@ -20,12 +20,12 @@ class ProjectDB(SQLiteMixin, BaseProjectDB, BaseDB):
         self.path = path
         self.last_pid = 0
         self.conn = None
-        self._execute('''CREATE TABLE IF NOT EXISTS `%s` (
+        self._execute('''CREATE TABLE IF NOT EXISTS `{0!s}` (
                 name PRIMARY KEY,
                 `group`,
                 status, script, comments,
                 rate, burst, updatetime
-                )''' % self.__tablename__)
+                )'''.format(self.__tablename__))
 
     def insert(self, name, obj={}):
         obj = dict(obj)
@@ -37,22 +37,22 @@ class ProjectDB(SQLiteMixin, BaseProjectDB, BaseDB):
         obj = dict(obj)
         obj.update(kwargs)
         obj['updatetime'] = time.time()
-        ret = self._update(where="`name` = %s" % self.placeholder, where_values=(name, ), **obj)
+        ret = self._update(where="`name` = {0!s}".format(self.placeholder), where_values=(name, ), **obj)
         return ret.rowcount
 
     def get_all(self, fields=None):
         return self._select2dic(what=fields)
 
     def get(self, name, fields=None):
-        where = "`name` = %s" % self.placeholder
+        where = "`name` = {0!s}".format(self.placeholder)
         for each in self._select2dic(what=fields, where=where, where_values=(name, )):
             return each
         return None
 
     def check_update(self, timestamp, fields=None):
-        where = "`updatetime` >= %f" % timestamp
+        where = "`updatetime` >= {0:f}".format(timestamp)
         return self._select2dic(what=fields, where=where)
 
     def drop(self, name):
-        where = "`name` = %s" % self.placeholder
+        where = "`name` = {0!s}".format(self.placeholder)
         return self._delete(where=where, where_values=(name, ))

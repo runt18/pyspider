@@ -52,7 +52,7 @@ def _build_url(url, _params):
     enc_params = _encode_params(_params)
     if enc_params:
         if query:
-            query = '%s&%s' % (query, enc_params)
+            query = '{0!s}&{1!s}'.format(query, enc_params)
         else:
             query = enc_params
     url = (urlunparse([scheme, netloc, path, params, query, fragment]))
@@ -64,9 +64,9 @@ def quote_chinese(url, encodeing="utf-8"):
     if isinstance(url, six.text_type):
         return quote_chinese(url.encode(encodeing))
     if six.PY3:
-        res = [six.int2byte(b).decode('latin-1') if b < 128 else '%%%02X' % b for b in url]
+        res = [six.int2byte(b).decode('latin-1') if b < 128 else '%{0:02X}'.format(b) for b in url]
     else:
-        res = [b if ord(b) < 128 else '%%%02X' % ord(b) for b in url]
+        res = [b if ord(b) < 128 else '%{0:02X}'.format(ord(b)) for b in url]
     return "".join(res)
 
 
@@ -93,7 +93,7 @@ def curl_to_arguments(curl):
         else:
             # option
             if current_opt is None:
-                raise TypeError('Unknow curl argument: %s' % part)
+                raise TypeError('Unknow curl argument: {0!s}'.format(part))
             elif current_opt in ('-H', '--header'):
                 key_value = part.split(':', 1)
                 if len(key_value) == 2:
@@ -108,13 +108,13 @@ def curl_to_arguments(curl):
             elif current_opt in ('-X', '--request'):
                 kwargs['method'] = part
             else:
-                raise TypeError('Unknow curl option: %s' % current_opt)
+                raise TypeError('Unknow curl option: {0!s}'.format(current_opt))
             current_opt = None
 
     if not urls:
         raise TypeError('curl: no URL specified!')
     if current_opt:
-        raise TypeError('Unknow curl option: %s' % current_opt)
+        raise TypeError('Unknow curl option: {0!s}'.format(current_opt))
 
     kwargs['urls'] = urls
     if headers:

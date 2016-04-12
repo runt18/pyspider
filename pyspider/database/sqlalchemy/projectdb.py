@@ -41,7 +41,7 @@ class ProjectDB(BaseProjectDB):
                 engine = create_engine(self.url)
                 conn = engine.connect()
                 conn.execute("commit")
-                conn.execute("CREATE DATABASE %s" % database)
+                conn.execute("CREATE DATABASE {0!s}".format(database))
             except sqlalchemy.exc.SQLAlchemyError:
                 pass
             self.url.database = database
